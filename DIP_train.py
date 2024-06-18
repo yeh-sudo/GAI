@@ -8,6 +8,7 @@ import numpy as np
 from PIL import Image
 from matplotlib import pyplot as plt
 import imageio
+import os
 
 from DIP_model import Hourglass
 
@@ -19,6 +20,11 @@ def pixel_thanos(img, p=0.5):
     mask = mask > p
     mask = mask.repeat(1, 3, 1, 1)
     return img, mask
+
+DIP_path = "./DIP_models"
+if not os.path.exists(DIP_path):
+    print("dir not exists")
+    os.makedirs(DIP_path)
 
 
 lr = 1e-2
@@ -54,10 +60,12 @@ for i in range(n_iter):
             out = x + y * (1 - mask)
             out = out[0].cpu().detach().permute(1, 2, 0)*255
             out = np.array(out, np.uint8)
+            img = Image.fromarray(out, 'RGB')
+            img.save(f"./results/{i}.jpg")
             images.append(out)
     if (i+1) % 20 == 0:
         print('Iteration: {} Loss: {:.07f}'.format(i+1, losses[-1]))
-        torch.save(hg_net.state_dict(), "./DIP_models/DIP.pt")
+        torch.save(hg_net, "./DIP_models/DIP.pt")
 
 imageio.mimsave('imgs/barbara_progress.gif', images)
 # plt.imsave('final.jpg', out)

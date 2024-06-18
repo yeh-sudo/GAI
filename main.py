@@ -2,6 +2,12 @@ import torch
 import torchvision.transforms as T
 from denoising_diffusion_pytorch import Unet, GaussianDiffusion, Trainer1D
 from PIL import Image
+import os
+
+diffusion_path = "./diffusion_models"
+if not os.path.exists(diffusion_path):
+    print("dir not exists")
+    os.makedirs(diffusion_path)
 
 device = torch.device("cuda")
 
